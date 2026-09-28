@@ -6,13 +6,17 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
+interface UserResponse {
+  objectId: string;
+  email: string;
+  username: string;
+}
 export default function Rootlayout({ children }: LayoutProps<'/'>) {
-  const { token, objectId } = useAuthStore();
-  const { setAuth } = useAuthStore();
+  const { token, objectId, setAuth } = useAuthStore();
 
   useQuery({
     queryFn: async () => {
-      const res = await axios.get(
+      const res = await axios.get<UserResponse>(
         `https://api.backendless.com/51BDC217-6F0F-4668-8A87-71B5CFFCD59A/EC698C6A-021C-4A86-8DAD-32A425C360DD/data/Users/${objectId}`,
         {
           headers: {
@@ -20,7 +24,12 @@ export default function Rootlayout({ children }: LayoutProps<'/'>) {
           },
         },
       );
-      setAuth(res?.data?.email, res?.data?.username, token, res?.data?.objectId);
+      setAuth(
+        res?.data?.email,
+        res?.data?.username,
+        token,
+        res?.data?.objectId,
+      );
       return res.data;
     },
     queryKey: ['session-user', token, objectId],
