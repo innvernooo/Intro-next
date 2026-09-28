@@ -13,6 +13,13 @@ import { LoginApi } from '@/Api/loginApi/LoginApi';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/useAuthStore';
 
+interface LoginResponse {
+  objectId: string;
+  email: string;
+  username: string;
+  'user-token': string;
+}
+
 export default function LoginPage() {
   const {
     register,
@@ -35,12 +42,8 @@ export default function LoginPage() {
     onSuccess: (res) => {
       console.log(res);
       toast.success('Login berhasil!');
-      setAuth(
-        res?.data?.email,
-        res?.data?.username,
-        res?.data?.['user-token'],
-        res?.data?.objectId,
-      );
+      const data = res.data as LoginResponse;
+      setAuth(data.email, data.username, data['user-token'], data.objectId);
       router.push('/admin');
     },
     onError: (res) => {
